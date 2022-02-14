@@ -106,6 +106,61 @@ class doli_api
 		return $this->get($ep, ["query"=>$params]);
 	}
 
+    public function getProductImages(int $id) {
+    	if (!$id) return false; 
+
+        $token = $this->token->success->token;
+
+		$query = [
+			"id"=>$id,
+			"modulepart"=>"product"
+		];
+
+		return $this->get("/documents", ["query"=>$query]);
+	}
+
+    public function getPublicImagesUrl( array $ecmfiles_infos ) {
+    	$images = [];
+
+    	//get current url 
+    	$current_url = $this->getCurrentUrl();
+
+		//walk through each image 
+    	foreach ($ecmfiles_infos as $k=>$image) {
+    		if (!$image->share) continue;
+
+    		$image_content 	= file_get_contents($this->url_base ."/document.php?hashp=". $image->share);
+    		$image_ext 		= substr($image->filename, strrpos($image->filename, "."));
+    		$image_name 	= $image->share . $image_ext;
+    		$image_dir 		= dirname(__FILE__) ."/../public/images/";
+			
+			if (!file_exists(realpath($image_dir)))
+    			mkdir($image_dir, 0777, true);
+
+    		if (file_put_contents(realpath($image_dir) ."/". $image_name, $image_content)) {
+	    		$images[] = [
+	    			"src"=>$current_url ."/public/images/". $image_name,
+	    			"position"=>$k
+	    		];
+    		}
+    	}
+    	return $images;
+	}
+
+	public function getCurrentUrl() {
+		$httpDefaultPath= isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] : substr($_SERVER['PHP_SELF'],0,strrpos($_SERVER['PHP_SELF'],"/")+1);
+		$httpDefaultPath = str_replace('/products.php', "", $httpDefaultPath);
+
+		$protocol = 'http://';
+		if (isset($_SERVER['HTTPS']) 
+			&& ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) 
+			&& $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+			$protocol = 'https://';
+		}
+
+		return $protocol . $httpDefaultPath;
+	}
+
     public function getCategories(array $params = []) {
         $token = $this->token->success->token;
 
@@ -218,8 +273,8 @@ class doli_api
 	        		$product = $this->getProducts([ "sqlfilters" => "(t.ref:=:'". $item->sku ."')" ]);
 	        	}
 	        	if ($product[0]) {
-	        		$lines[$k]['fk_product'] = (int)$product->id;
-	        		$lines[$k]['product_type'] = (int)$product->type;
+	        		$lines[$k]['fk_product'] = (int)$product[0]->id;
+	        		$lines[$k]['product_type'] = (int)$product[0]->type;
 	        	} else {
 	        		$lines[$k]['fk_product'] = 0;
 	        		$lines[$k]['product_type'] = 0;
