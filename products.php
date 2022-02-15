@@ -2,6 +2,9 @@
 
 require_once dirname(__FILE__) .'/bootstrap.php';
 
+//categories caching
+$cache_categories = []; 
+
 //get all products from dolibarr
 $products = $doli_api->getProducts();
 
@@ -21,7 +24,13 @@ foreach ($products as $product) {
     foreach ($doli_categories as $dk=>$dv) {
 
         //generate slug from category name
-        $slug = $wc_api->slugify( $dv->label ); 
+        $slug = $wc_api->slugify( $dv->label );
+
+        //check cache to optimize 
+        if (isset($cache_categories[ $slug ])) {
+            $categories[] = $cache_categories[ $slug ];
+            continue;
+        }
 
         //search wc category by slug
         $category_found = $wc_api->searchCategory( $slug );
@@ -32,6 +41,9 @@ foreach ($products as $product) {
             foreach ($category_found as $c) {
                 if ($c->slug === $slug) {
                     $categories[] = ["id"=>$c->id];
+
+                    //save into cache
+                    $cache_categories[ $slug ] = ["id"=>$c->id];
                 }
             }
         }
