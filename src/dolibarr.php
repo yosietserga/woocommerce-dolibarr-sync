@@ -106,6 +106,23 @@ class doli_api
 		return $this->get($ep, ["query"=>$params]);
 	}
 
+    public function getProductCategories(int $id) {
+    	try {
+			return $this->get("/products/$id/categories");
+		} catch (Exception $e) {
+			echo $e->getMessage();
+			return false;		
+		}
+	}
+
+    public function getProductCategoriesID(array $categories) {
+    	$categories_ids = [];
+    	foreach ($categories as $k=>$v) {
+    		$categories_ids[] = ["id"=>$v->id];
+    	}
+    	return $categories_ids;
+	}
+
     public function getProductImages(int $id) {
     	if (!$id) return false; 
 
