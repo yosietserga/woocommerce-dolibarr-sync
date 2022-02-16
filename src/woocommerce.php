@@ -234,7 +234,9 @@ class wc_api {
 			foreach ($valid_params as $k=>$v) {
 				if (isset($data[$j][$k]) && !empty($data[$j][$k])) {
 					$categories[$j] = $l;
-				}
+				} else {
+                    unset($data[$j]);
+                }
 			}
 		}
 
@@ -245,7 +247,7 @@ class wc_api {
 			if ( empty( $value['name'] ) ) continue;
 
 			//generate slug from category name
-			$slug = $this->slugify( $value['name'] ); 
+            $slug = $this->slugify($value['name']."-".$data[$k]["doli_category_id"]."_".$value[$k]["parent"]);
 
 			//search wc category by slug
 			$category_found = $this->searchCategory( $slug );

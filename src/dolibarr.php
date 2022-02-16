@@ -47,17 +47,6 @@ class doli_api
 	}
 
     private function getAccessToken() {
-    	/*
-		$response = $this->post("/login", [
-			'form_params' => [
-		        'login' => $this->username, 
-		        'password' => $this->password
-		    ],
-		    'withToken' => false,
-		]);
-
-		$this->token = $response;
-		*/
 		return $this->subscription_key;
 	}
 
@@ -96,8 +85,6 @@ class doli_api
 	}
 
     public function getProducts(array $params = []) {
-        $token = $this->token->success->token;
-
         $ep = "/products";
 		if (isset($params['id']) && !empty((int)$params['id'])) {
 			$ep = "/products/{$params['id']}";
@@ -125,8 +112,6 @@ class doli_api
 
     public function getProductImages(int $id) {
     	if (!$id) return false; 
-
-        $token = $this->token->success->token;
 
 		$query = [
 			"id"=>$id,
@@ -179,21 +164,10 @@ class doli_api
 	}
 
     public function getCategories(array $params = []) {
-        $token = $this->token->success->token;
-
+        $ep = "/categories";
 		if (isset($params['id']) && !empty((int)$params['id'])) {
 			$ep = "/categories/{$params['id']}";
-
-			return $this->get($ep);
 		} 
-
-        $ep = "/categories";
-
-		// if (isset($params['page']) && !empty((int)$params['page'])) {
-		// 	$query['page'] = (int)$params['page'];
-		// } else {
-		// 	$query['page'] = 1;
-		// }
 
 		return $this->get($ep);
 	}
@@ -201,8 +175,6 @@ class doli_api
 
 	//get order by ref 
 	public function getOrders(array $params = []) {		
-        $token = $this->token->success->token;
-
         $ep = "/orders";
 		if (isset($params['id']) && !empty((int)$params['id'])) {
 			$ep = "/orders/{$params['id']}";
@@ -214,7 +186,6 @@ class doli_api
 	public function getCustomerByEmail(string $email) {
 		if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
 
-        $token = $this->token->success->token;
         $ep = "/thirdparties";
 
 		return $this->get($ep, ["query"=>["sqlfilters" => "(t.email:=:'".$email."')"]]);

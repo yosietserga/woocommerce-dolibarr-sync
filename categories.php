@@ -16,6 +16,7 @@ foreach ($categories as $k=>$v) {
 	        'name'=>$v->label,
 	        'description'=>$v->description,
 	        'parent'=>(int)$v->fk_parent,
+	        'doli_category_id'=>$v->id
 		];
 	}
 }
