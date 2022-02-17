@@ -24,7 +24,7 @@ foreach ($products as $product) {
     foreach ($doli_categories as $dk=>$dv) {
 
         //generate slug from category name
-        $slug = $wc_api->slugify( $dv->label );
+        $slug = $wc_api->slugify( $dv->label ) ."-". $dv->id ."_". $dv->fk_parent;
 
         //check cache to optimize 
         if (isset($cache_categories[ $slug ])) {

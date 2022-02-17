@@ -250,7 +250,7 @@ class doli_api
 				$lines[$k] = [
 	                "label" 	=> $item->name,
 	                "desc" 		=> $item->name,
-	                "subprice" 	=> $item->total,
+	                "subprice" 	=> $item->total + $item->total_tax,
 	                "tva_tx" 	=> $item->total_tax,
 	                "ref_ext" 	=> $item->sku,
 	                "qty" 		=> $item->quantity,
